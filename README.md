@@ -12,6 +12,7 @@ The easiest way to use the tool is the precompiled .exe version.
 * Download the latest release from the Releases page.
 * Run R1999LinkGrabber.exe
 * Open summon history
+
 You should see:
 ```
 Proxy enabled: 127.0.0.1:8080
@@ -20,6 +21,7 @@ Launch the game and open summon history
 ```
 * Run Reverse:1999
 * Open the Summon History page in the game.
+
 When the link is captured, the program will display something like:
 ```
 === SUMMON LINK FOUND ===
