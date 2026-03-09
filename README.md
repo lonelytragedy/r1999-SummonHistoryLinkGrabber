@@ -11,7 +11,6 @@ The easiest way to use the tool is the precompiled .exe version.
 ## Steps:
 * Download the latest release from the Releases page.
 * Run R1999LinkGrabber.exe
-* Open summon history
 
 You should see:
 ```
