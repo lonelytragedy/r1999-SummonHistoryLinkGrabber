@@ -1,0 +1,50 @@
+name: Build EXE
+
+on:
+  workflow_dispatch:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt pyinstaller
+
+      - name: Build
+        run: >
+          pyinstaller --onefile --console --name R1999LinkGrabber
+          --collect-all mitmproxy --collect-all mitmproxy_rs
+          R1999LinkGrabber.py
+
+      - name: Smoke test
+        shell: pwsh
+        run: |
+          $p = Start-Process dist\R1999LinkGrabber.exe -PassThru
+          Start-Sleep 15
+          if ($p.HasExited) { throw "exe exited early with code $($p.ExitCode)" }
+          Stop-Process $p.Id
+          Set-ItemProperty "HKCU:\Software\Microsoft\Windows\CurrentVersion\Internet Settings" ProxyEnable 0
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: R1999LinkGrabber
+          path: dist/R1999LinkGrabber.exe
+
+      - name: Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/R1999LinkGrabber.exe

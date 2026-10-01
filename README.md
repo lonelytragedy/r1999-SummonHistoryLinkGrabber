@@ -35,7 +35,6 @@ If you prefer to run the original Python script instead of the compiled executab
 * Python 3.10 – 3.12 (Tested on Python 3.12.10)
 * Windows (Tested on Windows 11 25H2)
 * mitmproxy
-* pyperclip
 
 You can download Python from: https://www.python.org/downloads/release/python-31210/
 
@@ -47,7 +46,7 @@ cd r1999-SummonHistoryLinkGrabber
 ```
 Install dependencies:
 ```
-pip install mitmproxy pyperclip
+pip install -r requirements.txt
 ```
 Start the script with:
 ```
@@ -58,14 +57,19 @@ Then:
 * Open the Summon History page
 * The program will automatically detect the summon history request and output the link.
 
-# Important Warning
-Do not close the console window using the X (close button) in the top corner of the window.
-Closing the program this way may leave the system proxy enabled.
-Please only exit the program using one of the following methods:
-* Press Ctrl + C in the console
-* Let the script finish normally after the summon link is captured
+# Building the EXE
+The executable is self-contained: mitmproxy is bundled inside, nothing else has to be installed.
+It is built automatically by GitHub Actions (`.github/workflows/build.yml`) when a `v*` tag is pushed, or manually from the Actions tab.
+To build it locally:
+```
+pip install -r requirements.txt pyinstaller
+pyinstaller --onefile --console --name R1999LinkGrabber --collect-all mitmproxy --collect-all mitmproxy_rs R1999LinkGrabber.py
+```
+The result is `dist/R1999LinkGrabber.exe`.
 
-These methods allow the program to properly disable the proxy automatically.
+# Closing the Program
+The previous proxy settings are restored automatically when the link is captured, on Ctrl + C, and when the console window is closed with the X button.
+If the process is killed forcibly (e.g. from Task Manager), the proxy may stay enabled; see below.
 
 # How to Manually Disable the Proxy (If Needed)
 If the proxy remains enabled after closing the program, you can disable it manually.
