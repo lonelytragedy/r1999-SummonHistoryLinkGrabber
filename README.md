@@ -6,6 +6,15 @@ The program temporarily enables a local proxy (mitm), listens for the summon his
 This project simply reads network requests made by the game client and does not modify game data.
 Use at your own risk.
 
+# Quick Start (PowerShell one-liner)
+Open PowerShell and paste:
+```powershell
+Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/lonelytragedy/r1999-SummonHistoryLinkGrabber/main/getlink.ps1'))
+```
+The script (`getlink.ps1`) downloads the latest `R1999LinkGrabber.exe` from Releases into `%TEMP%\R1999LinkGrabber` (re-downloaded only when a new release appears) and runs it in the same window.
+Then launch the game and open the Summon History page, as described below.
+After the program exits, the script also turns off the `127.0.0.1:8080` proxy if it was left enabled.
+
 # Quick Start (EXE version)
 The easiest way to use the tool is the precompiled .exe version.
 ## Steps:
