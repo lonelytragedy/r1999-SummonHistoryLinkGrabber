@@ -14,7 +14,9 @@
     $Repo      = 'lonelytragedy/r1999-SummonHistoryLinkGrabber'
     $AssetName = 'R1999LinkGrabber.exe'
     $ProxyAddr = '127.0.0.1:8080'
-    $CacheDir  = Join-Path $env:TEMP 'R1999LinkGrabber'
+    # Current user's temp folder (may be an 8.3 short path, e.g. C:\Users\USERNA~1\...;
+    # cached files are therefore matched by file name, not by full path).
+    $CacheDir  = Join-Path ([System.IO.Path]::GetTempPath()) 'R1999LinkGrabber'
     $InetKey   = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Internet Settings'
 
     [System.Net.ServicePointManager]::SecurityProtocol =
@@ -53,6 +55,7 @@
     Write-Host 'Reverse:1999 Summon Link Grabber' -ForegroundColor Cyan
 
     if (-not (Test-Path $CacheDir)) { New-Item -ItemType Directory -Path $CacheDir | Out-Null }
+    $CacheDir = (Get-Item -LiteralPath $CacheDir).FullName
 
     $info = Get-LatestAsset
     if ($info) {
@@ -88,10 +91,17 @@
             return
         }
         Move-Item -Path $tmp -Destination $exe -Force
-        # Remove old cached versions.
+        # Remove old cached versions (compare by file name, not full path).
+        $exeName = Split-Path $exe -Leaf
         Get-ChildItem $CacheDir -Filter 'R1999LinkGrabber*.exe' |
-            Where-Object { $_.FullName -ne $exe } |
+            Where-Object { $_.Name -ne $exeName } |
             Remove-Item -Force -ErrorAction SilentlyContinue
+    }
+
+    if (-not (Test-Path -LiteralPath $exe)) {
+        Write-Host "$exe is missing after download." -ForegroundColor Red
+        Write-Host 'It was probably removed by antivirus (Windows Defender). Check Protection history and allow the file, then run the command again.' -ForegroundColor Yellow
+        return
     }
 
     try { Unblock-File -Path $exe } catch { }
